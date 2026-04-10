@@ -206,7 +206,7 @@ DATA1001 Workshop 17 12-2pm Week 1,2,3,4,5,6 (all group members)
 
 Online meeting using Discord from 11 to 11:50am Tuesday 7th April. In attendance: Seb, Lexie, Lila, Evelyn, Eason
 
-# Resources
+## Resources
 We used Github to collaborate on the Quarto document (https://github.com/Polypholia/data1001-project-1/tree/main/Data%20Sci) as well as Discord and Whatsapp to communicate during the project. We also viewed the HD exemplar and comments on canvas to ensure the format of our report was correct.
 
 ## AI Usage Statements
@@ -215,6 +215,6 @@ Codex - Chatgpt 5.4: Used AI to debug a missing line for the residual plot
 
 AI was not used in any of the remainding part of this report.
 
-# Professional Standard of Report
+## Professional Standard of Report
 The shared value of truthfulness and integrity was upheld within our analysis, as our findings truthfully came directly from the data collected rather than a biased source or preconceived ideas. Our project also adhered to the ethical principle of pursuing objectivity, as we transparently represented our findings, regardless of the outcomes, and also acknowledged the limitations of our data.
 
