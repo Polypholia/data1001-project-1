@@ -1,6 +1,6 @@
 ---
 title: "DATA1001 Project"
-author: "SIDs: 560654992"
+author: "SIDs: 560654992, 560626136, 560657591, 560042292, 560622201"
 format: 
   html:
     embed-resources: true
@@ -18,12 +18,6 @@ Older demographics, between 40 - 45 tend to report higher standard alcohol intak
 
 ## EDA (Max 200 words)
 
-Discuss the data and consider
-
-1.  Source
-2.  Structure
-3.  Limitations
-
 # Source
 
 Variables focused on was sourced from a survey containing 26 testable variables:
@@ -38,11 +32,12 @@ Variables focused on was sourced from a survey containing 26 testable variables:
 
 
 # Limitations
-
 Not every person in DATA1001 consented to participate in the study, so the dataset represents a sample rather than the entire population. The question about drug use was randomly assigned to participants, either as “Have you ever used recreational drugs?” or “Have you ever gotten high off illicit drugs?” This introduces a potential confounding variable, because a participant who answers “no” to having gotten high off illicit drugs might still have used recreational drugs at some point, leading to misclassification in the responses.
 
 # Assumptions
-We assumed that most responses were honest and reasonable in answering the questions,  During data cleaning, we removed entries with missing age (eg, N/A) information and excluded records reporting more than 20 standard drinks, as such values exceed safe consumption limits and were signs of untruthful responses. Furthermore age values were left from 15 to 80 years, which represented the most appropriate bounds based on the distribution of the dataset.
+We assumed that most responses were honest and reasonable in answering the questions.
+
+During data cleaning, we removed entries with missing age (eg, N/A) information and excluded records reporting more than 20 standard drinks, as such values exceed safe consumption limits and were signs of untruthful responses. Furthermore age values were left from 15 to 80 years, which represented the most appropriate bounds based on the distribution of the dataset. For genders, we took the median number of standard drinks per age to simplify the graphical summary in RQ2. We also removed all data entries in the drug use question that answered ‘prefer not to say’ as this was not relevant to our research question.
 
 ## 1) Is regular alcohol consumption associated with an increased likelihood of trying recreational drugs? (Max 350 words for both RQ1 + RQ2 combined)
 ```{r fig.height=8, fig.width=16, message=FALSE, warning=FALSE}
@@ -52,19 +47,20 @@ library(readr)
 datasurvey <- read_csv("/Users/sebastian/Downloads/data1001_survey_data_2026S1-1.csv")
 
 clean_data <- datasurvey %>%
+  rename('Drug Use' = drug_use_ans) %>%
     
 mutate(
     standard_drinks = suppressWarnings(as.numeric(standard_drinks)),
-    drug_use_ans = na_if(drug_use_ans, "Prefer not to say")) %>%
+    `Drug Use` = na_if(`Drug Use`, "Prefer not to say")) %>%
   filter(
-    !is.na(drug_use_ans),
+    !is.na(`Drug Use`),
     !is.na(standard_drinks))
 
-drugxalcohol <- ggplot(clean_data, aes(y = drug_use_ans, x = standard_drinks, fill = drug_use_ans)) +
+drugxalcohol <- ggplot(clean_data, aes(y = `Drug Use`, x = standard_drinks, fill = `Drug Use`)) +
   geom_boxplot(alpha = 0.7, width = 0.3) +
   scale_fill_manual(values = c("Yes" = "red", "No" = "green")) +
   scale_x_continuous(limits = c(0, 20)) +
-  labs(title = "Median Standard Drinks by Age Group and Gender",
+  labs(title = "Drug usage and Drinking association",
        x = "Median Standard Drinks",
        y = "Drug Use") +
   theme_minimal() + theme(
@@ -84,6 +80,9 @@ Type your research question evidence here.
 ## Research Question 2 (Linear Model)
 # How does age relate to standard alcohol intake, and does this relationship differ by gender?
 
+::: {.panel-tabset}
+
+#### Linear
 ```{r fig.height=8, fig.width=16, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(plotly)
@@ -123,17 +122,95 @@ alcoholxage <- ggplot(plot_data, aes(x = age, y = median_drinks, color = gender)
 
 ggplotly(alcoholxage)
 ```
-Type your research question evidence here. Include testing assumptions of the linear model (residual plot).
+#### Residual
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(plotly)
+library(readr)
+
+datasurvey <- read_csv("/Users/sebastian/Downloads/Data Sci/data1001_survey_data_2026S1-1.csv", na = c("", "NA", "N/A", "n/a", "na", "NaN", "null", "NULL"))
+
+breaks <- seq(15, 80, by = 5)
+labs <- paste0(breaks[-length(breaks)], "–", breaks[-1])
+
+clean_data <- datasurvey %>%
+  mutate(across(where(is.character), ~str_trim(.x))) %>%
+  mutate(across(where(is.character), ~na_if(.x, "n/a"))) %>%
+  mutate(across(where(is.character), ~na_if(.x, "N/A"))) %>%
+  mutate(across(where(is.character), ~na_if(.x, "NA"))) %>%
+  mutate(age = suppressWarnings(as.numeric(age)),
+         standard_drinks = suppressWarnings(as.numeric(standard_drinks))) %>%
+  filter(is.finite(age),
+         is.finite(standard_drinks),
+         !is.na(gender),
+         gender != "") 
+
+plot_data <- clean_data %>%
+  filter(gender %in% c("Female", "Male", "Non-binary / third gender")) %>%
+  group_by(gender, age) %>%
+  summarise(median_drinks = median(standard_drinks, na.rm = TRUE), .groups = "drop")
+
+model <- lm(median_drinks ~ age * gender, data = plot_data)
+
+residual_data <- plot_data %>% mutate(
+    predicted = fitted(model),
+    residual = median_drinks - predicted)
+
+residual_plot <- ggplot( residual_data, aes(x = age, y = residual, colour = gender)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_x_continuous(limits = c(15, 80), breaks = seq(15, 80, 5)) +
+  labs(
+    title = "Residual Plot: Median Standard Drinks vs Age",
+    x = "Age",
+    y = "Residuals (Observed − Predicted)") +
+  theme_minimal()
+
+residual_plot
+
+```
+
+:::
+
+It is clear from the linear models on the graph, for all genders, that the median standard drinks (MSD) increases with age. Between the genders, Non-binary/third gender (NB/TG) increases the most from 2.5 at age 18, to 8 at age 60. While Male is a close second early on but only reaches 5 MSD by age 80. Females consume the least Standard Drinks of all the genders.
+
+There are limitations with this graph however, since some vast outliers have increased the degree of the linear models, as you can see with the three data points for NB/TG at ages 21, 27, and 44. Additionally, the residual graph shows the data is heteroscedastic, meaning that the linear model is not appropriate for this data. 
+
+A study conducted on Australian adults (Leggat et al., 2022) found that, while younger adults typically consume more standard drinks per occasion, the frequency of drinking occasions and thus the total alcohol consumption increases beyond this, typically peaking in middle age. Higher levels were observed in men across all ages.
 
 ## Articles (Max 50 words)
 
-Include any relevant literature to your analysis.
+Gossop, M., Marsden, J., & Stewart, D. (2002). Dual dependence: assessment of dependence upon alcohol and illicit drugs, and the relationship of alcohol dependence among drug misusers to patterns of drinking, illicit drug use and health problems. Addiction, 97(2), 169–178. https://doi.org/10.1046/j.1360-0443.2002.00028.x 
+
+Leggat, G., Livingston, M., Kuntsche, S., & Callinan, S. (2022). Alcohol Consumption Trajectories Over the Australian Life Course. Addiction, 117(7). https://doi.org/10.1111/add.15849 
+
+‌Roche, A., Kostadinov, V., Chapman, J., & McEntee, A. (2021). Have decreases in young workers’ risky drinking resulted in an increase in illicit drug use? Health Promotion Journal of Australia, 32(S2), 248–255. https://doi.org/10.1002/hpja.454 
 
 # Acknowledgements
+## Contributions
+All group members contributed to initial project ideas, meetings and discussions throughout our project time. We utilised a group chat and discord server to communicate throughout the duration of the project. 
 
-The Acknowledgment section includes a list of group meetings (date and time and attendance), the contribution of each group member, and all resources used (e.g. url of stack overflow, url of Ed post, date and details of drop-in session with tutor). 
+LEXIE 560657591: External research and articles for RQ1 + RQ2, contribution to powerpoint presentation
 
-An AI usage statement including: 
+LILA 560622201: Contribution to EDA, writing of Acknowledgements and Professional standard of report sections, creation and contribution to powerpoint presentation, organisation of group document
+
+EVELYN 560627136: Writing of executive summary, contribution to initial ideas for RQ1 + RQ2, contribution to powerpoint presentation
+
+DERBY 550776965: RQ2 research, Research question 2 analysis
+
+Seb 560654992: Creation of Github and R coding graphs for Research Question 1 and 2, trend writing for RQ1 + RQ2, contribution to EDA and AI Acknowledgement
+
+EASON 560042292: R coding graph for Research Question 1 and help with trend writing for Research Question 1
+
+## Group Meetings
+DATA1001 Workshop 17 12-2pm Week 1,2,3,4,5,6 (all group members)
+
+Online meeting from 11 to 11:50am Tuesday 7th April
+
+## AI Usage Statements
 Codex - Chatgpt 5.3: Used to increase spacing in the x-axis and clean N/A values for Research Question 1
+Codex - Chatgpt 5.3: Used AI to debug a missing line for the residual plot
 
-A short statement explaining how 1 of the Shared Values and 1 of the Ethical Principles has been adhered to.
+# Professional Standard of Report
+The shared value of truthfulness and integrity was upheld within our analysis, as our findings truthfully came directly from the data collected rather than a biased source or preconceived ideas. Our project also adhered to the ethical principle of pursuing objectivity, as we transparently represented our findings, regardless of the outcomes, and also acknowledged the limitations of our data.
+
