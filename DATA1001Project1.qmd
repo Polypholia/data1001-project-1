@@ -1,5 +1,5 @@
 ---
-title: "DATA1001 Project"
+title: "DATA1001 Project (Group 17_1)"
 author: "SIDs: 560654992, 560626136, 560657591, 560042292, 560622201, 550776965"
 format: 
   html:
@@ -13,9 +13,9 @@ format:
 
 # Recommendation/Insight
 
-Older demographics, between 40 - 45 tend to report higher standard alcohol intake and is more notable for males and especially non-binaries. Furthermore, older demographics generally report more past dates suggesting more accumulated relationship experience. Furthermore the distribution of data for this is heavily influenced by gender as reported females contribute to the strong variation observed in the data.
+This study compared a variety of variables to alcohol intake, to highlight potential relationships. Males represented a higher proportion of the recorded alcohol-consumption, with consumption peaking at middle-age, across genders. Alcohol consumption correlated with increased likelihood of trying recreational drugs, suggesting higher risk-taking behaviour, is correlated with high alcohol consumption. 
 
-# Evidence
+# Evidence Data Analysis
 
 # Source
 
@@ -31,11 +31,15 @@ Variables focused on was sourced from a survey containing 26 testable variables:
 
 
 # Limitations
-Not every person in DATA1001 consented to participate in the study, so the dataset represents a sample rather than the entire population. The question about drug use was randomly assigned to participants, either as “Have you ever used recreational drugs?” or “Have you ever gotten high off illicit drugs?” This introduces a potential confounding variable, because a participant who answers “no” to having gotten high off illicit drugs might still have used recreational drugs at some point, leading to misclassification in the responses.
+Not every person in DATA1X01 filled out the survey, hence the data is not representative of the entire population, but a sample.
+
+# Structure
+The dataset used was a combination of all data from the cohorts of DATA1001 and DATA1901: 2024 Semester 2, 2025 Semester 1, 2025 Semester 2 and 2026 Semester 1. In total, this was a cohort size of 6,228 students.
 
 # Assumptions
 We assumed that most responses were honest and reasonable in answering the questions.
 
+# Data Cleaning
 During data cleaning, we removed entries with missing age (eg, N/A) information and excluded records reporting more than 20 standard drinks, as such values exceed safe consumption limits and were signs of untruthful responses. Furthermore age values were left from 15 to 80 years, which represented the most appropriate bounds based on the distribution of the dataset. For genders, we took the median number of standard drinks per age to simplify the graphical summary in RQ2. We also removed all data entries in the drug use question that answered ‘prefer not to say’ as this was not relevant to our research question.
 
 # 1) Is regular alcohol consumption associated with an increased likelihood of trying recreational drugs?
@@ -51,23 +55,22 @@ clean_data <- datasurvey %>%
 mutate(
     standard_drinks = suppressWarnings(as.numeric(standard_drinks)),
     `Drug Use` = na_if(`Drug Use`, "Prefer not to say")) %>%
-  filter(
-    !is.na(`Drug Use`),
-    !is.na(standard_drinks))
+  filter(!is.na(`Drug Use`),
+         !is.na(standard_drinks))
 
 drugxalcohol <- ggplot(clean_data, aes(y = `Drug Use`, x = standard_drinks, fill = `Drug Use`)) +
   geom_boxplot(alpha = 0.7, width = 0.3) +
   scale_fill_manual(values = c("Yes" = "red", "No" = "green")) +
   scale_x_continuous(limits = c(0, 20)) +
   labs(title = "Drug usage and Drinking association",
-       x = "Median Standard Drinks",
+       x = "Median Standard Drinks over the Past Week",
        y = "Drug Use") +
-  theme_minimal() + theme(
-  plot.title = element_text(size = 20, face = "bold"),
-  legend.title = element_text(size = 14),
-  legend.text = element_text(size = 14),
-  axis.title = element_text(size = 14),
-  axis.text = element_text(size = 14))
+  theme_minimal() + 
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        axis.title = element_text(size = 14),
+        axis.text = element_text(size = 14))
 
 drugxalcohol
 ```
@@ -75,7 +78,6 @@ drugxalcohol
 The comparative boxplot shows a clear relationship between increased alcohol consumption and drug use. Students who reported no drug use had a median of 0 standard drinks in the past week and a tight right skewed range (IQR) of 3 suggesting low consistent drinking behaviour. In contrast those who did report drug use had a median of 5 drinks, with a wider IQR of 5 and a larger range of 12 compared to 3 from non-drug users implying greater varied drinking behaviour. Although there are more outliers within the non-drug users, it is evident that is only a small minority of the sample and that the drug users fall in the observable spread. Overall the higher IQR spread and higher median, can suggest, for this sample, that drug usage does associate to higher alcohol intake from the past week. 
 
 Risky drinking behaviours were associated with an increased risk of illicit drug use in young workers (Roche et al., 2021). The article also highlighted relationship status and stress levels as potential confounding factors. Another article (Gossop et al., 2002) linked higher alcohol consumption to increased stimulant use, but decreased heroin use. 
-
 
 # 2) How does age relate to standard alcohol intake, and does this relationship differ by gender?
 
@@ -177,38 +179,40 @@ There are limitations with this graph however, since some vast outliers have inc
 
 A study conducted on Australian adults (Leggat et al., 2022) found that, while younger adults typically consume more standard drinks per occasion, the frequency of drinking occasions and thus the total alcohol consumption increases beyond this, typically peaking in middle age. Higher levels were observed in men across all ages.
 
-## Articles (Max 50 words)
-
+## Articles 
 Gossop, M., Marsden, J., & Stewart, D. (2002). Dual dependence: assessment of dependence upon alcohol and illicit drugs, and the relationship of alcohol dependence among drug misusers to patterns of drinking, illicit drug use and health problems. Addiction, 97(2), 169–178. https://doi.org/10.1046/j.1360-0443.2002.00028.x 
 
 Leggat, G., Livingston, M., Kuntsche, S., & Callinan, S. (2022). Alcohol Consumption Trajectories Over the Australian Life Course. Addiction, 117(7). https://doi.org/10.1111/add.15849 
 
-‌Roche, A., Kostadinov, V., Chapman, J., & McEntee, A. (2021). Have decreases in young workers’ risky drinking resulted in an increase in illicit drug use? Health Promotion Journal of Australia, 32(S2), 248–255. https://doi.org/10.1002/hpja.454 
+Roche, A., Kostadinov, V., Chapman, J., & McEntee, A. (2021). Have decreases in young workers’ risky drinking resulted in an increase in illicit drug use? Health Promotion Journal of Australia, 32(S2), 248–255. https://doi.org/10.1002/hpja.454 
 
 # Acknowledgements
 ## Contributions
 All group members contributed to initial project ideas, meetings and discussions throughout our project time. We utilised a group chat and discord server to communicate throughout the duration of the project. 
 
-LEXIE 560657591: External research and articles for RQ1 + RQ2, contribution to powerpoint presentation
+Lexie - 560657591: External research and articles for RQ1 + RQ2, contribution to powerpoint presentation
 
-LILA 560622201: Contribution to EDA, writing of Acknowledgements and Professional standard of report sections, creation and contribution to powerpoint presentation, organisation of group document
+Lila - 560622201: Contribution to EDA, writing of Acknowledgements and Professional standard of report sections, creation and contribution to powerpoint presentation, organisation of group document
 
-EVELYN 560627136: Writing of executive summary, contribution to initial ideas for RQ1 + RQ2, contribution to powerpoint presentation
+Evelyn - 560627136: Writing of executive summary, contribution to initial ideas for RQ1 + RQ2, contribution to powerpoint presentation
+Daniel: RQ2 research and analysis
 
-DERBY 550776965: RQ2 research, Research question 2 analysis
+Sebastian - 560654992: Creation of Github and R coding graphs for Research Question 1 and 2, trend writing for RQ1 + RQ2, transferring information to QMD, contribution to EDA and AI Acknowledgement 
 
-Seb 560654992: Creation of Github and R coding graphs for Research Question 1 and 2, trend writing for RQ1 + RQ2, contribution to EDA and AI Acknowledgement
+Eason - 560042292: R coding graph for Research Question 1 and help with trend writing for Research Question 1
 
-EASON 560042292: R coding graph for Research Question 1 and help with trend writing for Research Question 1
+Derby - 550776965: RQ2 research, Research question 2 analysis
 
 ## Group Meetings
 DATA1001 Workshop 17 12-2pm Week 1,2,3,4,5,6 (all group members)
 
-Online meeting from 11 to 11:50am Tuesday 7th April
+Online meeting using Discord from 11 to 11:50am Tuesday 7th April. In attendance: Seb, Lexie, Lila, Evelyn, Eason
 
 ## AI Usage Statements
-Codex - Chatgpt 5.3: Used to increase spacing in the x-axis and clean N/A values for Research Question 1
-Codex - Chatgpt 5.3: Used AI to debug a missing line for the residual plot
+Codex - Chatgpt 5.4: Used to increase spacing in the x-axis and clean N/A values for Research Question 1
+Codex - Chatgpt 5.4: Used AI to debug a missing line for the residual plot
+
+AI was not used in any of the remainding part of this report.
 
 # Professional Standard of Report
 The shared value of truthfulness and integrity was upheld within our analysis, as our findings truthfully came directly from the data collected rather than a biased source or preconceived ideas. Our project also adhered to the ethical principle of pursuing objectivity, as we transparently represented our findings, regardless of the outcomes, and also acknowledged the limitations of our data.
