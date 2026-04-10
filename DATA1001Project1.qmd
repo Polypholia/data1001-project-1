@@ -1,8 +1,9 @@
 ---
 title: "DATA1001 Project"
-author: "SIDs: 560654992, 560626136, 560657591, 560042292, 560622201"
+author: "SIDs: 560654992, 560626136, 560657591, 560042292, 560622201, 550776965"
 format: 
   html:
+    self-contained: true
     embed-resources: true
     toc: true
     code-fold: true
@@ -15,8 +16,6 @@ format:
 Older demographics, between 40 - 45 tend to report higher standard alcohol intake and is more notable for males and especially non-binaries. Furthermore, older demographics generally report more past dates suggesting more accumulated relationship experience. Furthermore the distribution of data for this is heavily influenced by gender as reported females contribute to the strong variation observed in the data.
 
 # Evidence
-
-## EDA (Max 200 words)
 
 # Source
 
@@ -39,7 +38,7 @@ We assumed that most responses were honest and reasonable in answering the quest
 
 During data cleaning, we removed entries with missing age (eg, N/A) information and excluded records reporting more than 20 standard drinks, as such values exceed safe consumption limits and were signs of untruthful responses. Furthermore age values were left from 15 to 80 years, which represented the most appropriate bounds based on the distribution of the dataset. For genders, we took the median number of standard drinks per age to simplify the graphical summary in RQ2. We also removed all data entries in the drug use question that answered ‘prefer not to say’ as this was not relevant to our research question.
 
-## 1) Is regular alcohol consumption associated with an increased likelihood of trying recreational drugs? (Max 350 words for both RQ1 + RQ2 combined)
+# 1) Is regular alcohol consumption associated with an increased likelihood of trying recreational drugs?
 ```{r fig.height=8, fig.width=16, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(plotly)
@@ -73,12 +72,12 @@ drugxalcohol <- ggplot(clean_data, aes(y = `Drug Use`, x = standard_drinks, fill
 drugxalcohol
 ```
 
+The comparative boxplot shows a clear relationship between increased alcohol consumption and drug use. Students who reported no drug use had a median of 0 standard drinks in the past week and a tight right skewed range (IQR) of 3 suggesting low consistent drinking behaviour. In contrast those who did report drug use had a median of 5 drinks, with a wider IQR of 5 and a larger range of 12 compared to 3 from non-drug users implying greater varied drinking behaviour. Although there are more outliers within the non-drug users, it is evident that is only a small minority of the sample and that the drug users fall in the observable spread. Overall the higher IQR spread and higher median, can suggest, for this sample, that drug usage does associate to higher alcohol intake from the past week. 
+
+Risky drinking behaviours were associated with an increased risk of illicit drug use in young workers (Roche et al., 2021). The article also highlighted relationship status and stress levels as potential confounding factors. Another article (Gossop et al., 2002) linked higher alcohol consumption to increased stimulant use, but decreased heroin use. 
 
 
-Type your research question evidence here.
-
-## Research Question 2 (Linear Model)
-# How does age relate to standard alcohol intake, and does this relationship differ by gender?
+# 2) How does age relate to standard alcohol intake, and does this relationship differ by gender?
 
 ::: {.panel-tabset}
 
